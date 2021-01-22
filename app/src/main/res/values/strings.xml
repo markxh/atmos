@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Atmos</string>
+    <string name="degrees">%s\u00B0</string>
+</resources>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="za.co.dotmark.atmos.viewmodel.WeatherViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".view.CurrentWeatherFragment"
+        android:background="@drawable/gradient">
+
+        <TextView
+            android:id="@+id/city"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text='@{viewModel.cityName}'
+            android:textColor="@android:color/white"
+            android:textSize="54sp"
+            android:fontFamily="@font/landasans_ultra_light"
+            android:layout_marginTop="74dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Cape Town"/>
+
+        <TextView
+            android:id="@+id/current_temp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{@string/degrees(viewModel.currentTemp)}"
+            android:textColor="@android:color/white"
+            android:textSize="124sp"
+            android:fontFamily="@font/landasans_medium"
+            android:layout_marginTop="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/city"
+            tools:text="21\u00B0"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/current_temp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                android:id="@+id/max_temp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:textSize="38sp"
+                android:fontFamily="@font/landasans_medium"
+                android:text="@{@string/degrees(viewModel.maxTemp)}"
+                tools:text="23\u00B0"/>
+
+            <TextView
+                android:id="@+id/devider"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:textSize="34sp"
+                android:fontFamily="@font/landasans_ultra_light"
+                android:text=" / "/>
+
+            <TextView
+                android:id="@+id/max_min"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:textSize="38sp"
+                android:fontFamily="@font/landasans_ultra_light"
+                android:text="@{@string/degrees(viewModel.minTemp)}"
+                tools:text="18\u00B0"/>
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
