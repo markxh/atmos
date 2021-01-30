@@ -18,6 +18,7 @@ class ForecastAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView.
 
     fun updateForecast(forecast: List<CurrentWeather>) {
         this.forecast = forecast
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -27,29 +28,31 @@ class ForecastAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView.
     override fun getItemCount(): Int = forecast.size
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val weatherItem = forecast[position]
+        try {
+            val weatherItem = forecast[position]
 
-        (holder as ForecastItemViewHolder).day.text = weatherItem.dt?.let { getDay(it) }
-        holder.temp.text = weatherItem.main?.temp.toString()
+            (holder as ForecastItemViewHolder).day.text = weatherItem.dt?.let { getDay(it) }
+            holder.temp.text = context.getString(R.string.degrees, weatherItem.main?.temp?.toInt().toString())
 
-        val iconId : Int
+            //todo add more icons for all weather conditions
+            val iconId: Int = when {
+                weatherItem.weather?.get(0)!!.id == 800 -> R.drawable.clear
+                weatherItem.weather.get(0).id > 800 -> R.drawable.partlysunny
+                else -> R.drawable.rain
+            }
 
-        //todo add more icons for all weather conditions
-        iconId = when {
-            weatherItem.id == 800 -> R.drawable.clear
-            weatherItem.id!! > 800 -> R.drawable.partlysunny
-            else -> R.drawable.rain
+            Glide
+                .with(context)
+                .load(iconId)
+                .into(holder.icon)
+        } catch (e: Exception) {
+            println("error: ${e.localizedMessage}")
         }
-
-        Glide
-            .with(context)
-            .load(iconId)
-            .into(holder.icon)
     }
 
     private fun getDay(dt: Long) : String {
         val formatter = SimpleDateFormat("EEEE", Locale.getDefault())
-        return formatter.format( Date(dt))
+        return formatter.format( Date(dt * 1000L))
     }
 
     private class ForecastItemViewHolder(inflater: LayoutInflater, parent: ViewGroup) :

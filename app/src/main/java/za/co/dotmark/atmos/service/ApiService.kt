@@ -27,6 +27,7 @@ interface ApiService {
     fun get5DayForecast(@Query("lat") lat: Double,
                         @Query("lon") long: Double,
                         @Query("units") units: String,
+                        @Query("cnt") cnt: Int,
                         @Query("appid") appid: String) : Call<Forecast>
 
     companion object {

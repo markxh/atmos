@@ -1,5 +1,6 @@
 package za.co.dotmark.atmos.viewmodel
 
+import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import za.co.dotmark.atmos.model.CurrentWeather
@@ -20,17 +21,13 @@ class WeatherViewModel : ViewModel() {
 
     var units = "metric"
 
-    //Cape Town
-    var lat = 33.9249
-    var long = 18.4241
-
-    fun refreshWeather() {
-        getWeatherByLocation()
-        getForecast()
+    fun refreshWeather(location: Location) {
+        getWeatherByLocation(location)
+        getForecast(location)
     }
 
-    fun getWeatherByLocation() {
-        weatherRepository.getWeather(lat, long, units) {response, error ->
+    fun getWeatherByLocation(location: Location) {
+        weatherRepository.getWeather(location.latitude, location.longitude, units) {response, error ->
             if(response != null) {
                 updateCurrentWeather(response)
             } else {
@@ -39,8 +36,8 @@ class WeatherViewModel : ViewModel() {
         }
     }
 
-    fun getForecast() {
-        weatherRepository.getForecast(lat, long, units) {response, error ->
+    fun getForecast(location: Location) {
+        weatherRepository.getForecast(location.latitude, location.longitude, units, days = 5) {response, error ->
             if(response != null) {
                 updateForecast(response)
             } else {

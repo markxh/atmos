@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Atmos</string>
     <string name="degrees">%s\u00B0</string>
+    <string name="min">min</string>
+    <string name="current">Current</string>
+    <string name="max">max</string>
 </resources>

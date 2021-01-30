@@ -3,12 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/sunny">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:padding="12dp">
 
         <TextView
@@ -18,8 +18,7 @@
             android:textColor="@android:color/white"
             android:textSize="28sp"
             android:fontFamily="@font/landasans_ultra_light"
-            android:layout_weight="1"
-            tools:text="Monday"/>
+            android:layout_weight="1"/>
 
         <TextView
             android:id="@+id/temp"
