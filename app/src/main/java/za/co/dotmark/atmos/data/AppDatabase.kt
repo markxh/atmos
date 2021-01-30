@@ -4,11 +4,14 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import za.co.dotmark.atmos.WeatherApp
+import za.co.dotmark.atmos.model.Forecast
 
-@Database(entities = [WeatherEntity::class], version = 1, exportSchema = false)
+@Database(entities = [WeatherEntity::class, ForecastEntity::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun weatherDao(): WeatherDao
+
+    abstract fun forecastDao(): ForecastDao
 
     companion object {
         @Volatile

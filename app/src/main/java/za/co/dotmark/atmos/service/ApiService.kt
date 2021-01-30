@@ -7,12 +7,13 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 import za.co.dotmark.atmos.model.CurrentWeather
+import za.co.dotmark.atmos.model.Forecast
 import java.util.concurrent.TimeUnit
 
 interface ApiService {
 
     @GET("2.5/weather")
-    fun getWeatherByCoords(@Query("lat") lat: Double,
+    fun getLocationWeather(@Query("lat") lat: Double,
                            @Query("lon") long: Double,
                            @Query("units") units: String,
                            @Query("appid") appid: String) : Call<CurrentWeather>
@@ -21,6 +22,13 @@ interface ApiService {
     fun getWeatherByCityName(@Query("q") name: String,
                            @Query("units") units: String,
                            @Query("appid") appid: String) : Call<CurrentWeather>
+
+    @GET("2.5/forecast")
+    fun get5DayForecast(@Query("lat") lat: Double,
+                        @Query("lon") long: Double,
+                        @Query("units") units: String,
+                        @Query("cnt") cnt: Int,
+                        @Query("appid") appid: String) : Call<Forecast>
 
     companion object {
 
