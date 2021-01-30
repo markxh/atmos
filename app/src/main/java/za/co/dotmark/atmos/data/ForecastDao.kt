@@ -6,10 +6,10 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
 @Dao
-interface WeatherDao {
-    @Query("SELECT * FROM weather_table")
-    fun load(): List<WeatherEntity>
+interface ForecastDao {
+    @Query("SELECT * FROM forecast_table")
+    fun load(): List<ForecastEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun save(weatherEntity: WeatherEntity)
+    fun save(forecastEntity: ForecastEntity)
 }

@@ -13,8 +13,17 @@
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".view.CurrentWeatherFragment"
-        android:background="@drawable/gradient">
+        tools:context=".view.CurrentWeatherFragment">
+
+        <ImageView
+            android:id="@+id/background"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/forest_sunny"
+            android:scaleType="centerCrop"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
 
         <TextView
             android:id="@+id/city"
@@ -22,9 +31,9 @@
             android:layout_height="wrap_content"
             android:text='@{viewModel.cityName}'
             android:textColor="@android:color/white"
-            android:textSize="54sp"
+            android:textSize="34sp"
             android:fontFamily="@font/landasans_ultra_light"
-            android:layout_marginTop="74dp"
+            android:layout_marginTop="44dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -36,7 +45,7 @@
             android:layout_height="wrap_content"
             android:text="@{@string/degrees(viewModel.currentTemp)}"
             android:textColor="@android:color/white"
-            android:textSize="124sp"
+            android:textSize="94sp"
             android:fontFamily="@font/landasans_medium"
             android:layout_marginTop="4dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -44,44 +53,132 @@
             app:layout_constraintTop_toBottomOf="@id/city"
             tools:text="21\u00B0"/>
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:text="@{viewModel.description}"
+            android:textColor="@android:color/white"
+            android:textSize="34sp"
+            android:fontFamily="@font/landasans_medium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/current_temp"
+            tools:text="SUNNY"/>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/gradient"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            app:layout_constraintBottom_toBottomOf="@id/background"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <TextView
-                android:id="@+id/max_temp"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/white"
-                android:textSize="38sp"
-                android:fontFamily="@font/landasans_medium"
-                android:text="@{@string/degrees(viewModel.maxTemp)}"
-                tools:text="23\u00B0"/>
+                android:layout_weight="1"
+                android:layout_marginLeft="12dp"
+                android:gravity="left"
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/devider"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@android:color/white"
-                android:textSize="34sp"
-                android:fontFamily="@font/landasans_ultra_light"
-                android:text=" / "/>
+                <TextView
+                    android:id="@+id/min_temp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:textSize="24sp"
+                    android:fontFamily="@font/landasans_medium"
+                    android:text="@{@string/degrees(viewModel.minTemp)}"
+                    tools:text="18\u00B0"/>
 
-            <TextView
-                android:id="@+id/max_min"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:textSize="24sp"
+                    android:fontFamily="@font/landasans_ultra_light"
+                    tools:text="min"/>
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/white"
-                android:textSize="38sp"
-                android:fontFamily="@font/landasans_ultra_light"
-                android:text="@{@string/degrees(viewModel.minTemp)}"
-                tools:text="18\u00B0"/>
+                android:gravity="center"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/current_temp_bottom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:textSize="24sp"
+                    android:fontFamily="@font/landasans_medium"
+                    android:text="@{@string/degrees(viewModel.currentTemp)}"
+                    tools:text="21\u00B0"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:textSize="24sp"
+                    android:fontFamily="@font/landasans_ultra_light"
+                    tools:text="Current"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:layout_marginRight="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/max_temp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:textSize="24sp"
+                    android:fontFamily="@font/landasans_medium"
+                    android:text="@{@string/degrees(viewModel.maxTemp)}"
+                    tools:text="23\u00B0"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:textSize="24sp"
+                    android:fontFamily="@font/landasans_ultra_light"
+                    tools:text="max"/>
+
+            </LinearLayout>
 
         </LinearLayout>
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            app:layout_constraintTop_toBottomOf="@id/background"
+            android:background="@android:color/white"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/forecast_list"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/sunny"
+            tools:listitem="@layout/view_forecast_item"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/divider"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
