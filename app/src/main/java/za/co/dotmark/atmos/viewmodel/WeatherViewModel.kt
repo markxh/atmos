@@ -41,7 +41,7 @@ class WeatherViewModel : ViewModel() {
                 //todo show error
             }
 
-            isLoading.value = false
+            isLoading.postValue(false)
         }
     }
 
@@ -54,7 +54,7 @@ class WeatherViewModel : ViewModel() {
             }
         }
 
-        isLoading.value = false
+        isLoading.postValue(false)
     }
 
     private fun updateCurrentWeather(response: CurrentWeather) {

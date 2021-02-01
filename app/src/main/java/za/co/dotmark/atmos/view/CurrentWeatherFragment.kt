@@ -38,7 +38,6 @@ class CurrentWeatherFragment : Fragment() {
                               savedInstanceState: Bundle?): View {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.current_weather_fragment, container, false)
-        binding.lifecycleOwner = this
 
         return binding.root
     }
@@ -46,20 +45,25 @@ class CurrentWeatherFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(WeatherViewModel::class.java)
+        binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        fusedLocationClient = context?.let { LocationServices.getFusedLocationProviderClient(it) }!!
-        addLocationListener()
+        try {
+            checkPermissions()
 
-        forecastAdapter = context?.let { ForecastAdapter(it) }!!
+            forecastAdapter = context?.let { ForecastAdapter(it) }!!
 
-        binding.forecastList.adapter = forecastAdapter
+            binding.forecastList.adapter = forecastAdapter
 
-        viewModel.forecastList.observe(this.viewLifecycleOwner, Observer { forecastAdapter.updateForecast(it) })
-        viewModel.weatherId.observe(this.viewLifecycleOwner, Observer { if(it != 0) updateBackground(it) })
-        viewModel.isLoading.observe(this.viewLifecycleOwner, Observer {
-            binding.progressView.visibility = if (it) View.VISIBLE else View.GONE
-        })
+            viewModel.forecastList.observe(this.viewLifecycleOwner, Observer { forecastAdapter.updateForecast(it) })
+            viewModel.weatherId.observe(this.viewLifecycleOwner, Observer { if(it != 0) updateBackground(it) })
+            viewModel.isLoading.observe(this.viewLifecycleOwner, Observer {
+                binding.progressView.visibility = if (it) View.VISIBLE else View.GONE
+            })
+
+        } catch (e: Exception) {
+            println("error: ${e.localizedMessage}")
+        }
     }
 
     private fun updateBackground(id: Int) {
@@ -109,32 +113,31 @@ class CurrentWeatherFragment : Fragment() {
 
         if(requestCode == LOCATION_REQUEST_CODE) {
             if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                addLocationListener()
+                checkPermissions()
             }
         }
     }
 
-    private fun addLocationListener() {
-        if (context?.let {
-                ActivityCompat.checkSelfPermission(
-                    it,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                )
-            } != PackageManager.PERMISSION_GRANTED && context?.let {
-                ActivityCompat.checkSelfPermission(
-                    it,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                )
-            } != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(context as Activity,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION),
-                LOCATION_REQUEST_CODE)
+    private fun checkPermissions() {
+        try {
+            if(ActivityCompat.checkSelfPermission(this.context!!, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this.context!!, Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
 
-            return
+                requestPermissions(arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    ),
+                    LOCATION_REQUEST_CODE
+                )
+
+                return
+            }
+            fusedLocationClient = context?.let { LocationServices.getFusedLocationProviderClient(it) }!!
+            fusedLocationClient.lastLocation.addOnSuccessListener(viewModel::refreshWeather)
+        } catch (e: Exception) {
+            println("error: ${e.localizedMessage}")
         }
-
-        fusedLocationClient.lastLocation.addOnSuccessListener(viewModel::refreshWeather)
     }
 }
