@@ -20,7 +20,7 @@ class WeatherViewModel : ViewModel() {
     var weatherId = MutableLiveData(0)
     var forecastList = MutableLiveData<List<CurrentWeather>>()
 
-    var isLoading = MutableLiveData(false)
+    var isLoading = MutableLiveData(true)
 
     private val weatherRepository: WeatherRepository = WeatherRepository.getInstance()
 

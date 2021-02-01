@@ -3,7 +3,6 @@ package za.co.dotmark.atmos.view
 import android.Manifest
 import android.app.Activity
 import android.content.pm.PackageManager
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
