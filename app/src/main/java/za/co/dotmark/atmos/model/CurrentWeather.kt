@@ -12,5 +12,6 @@ data class CurrentWeather(
     val sys: Sys? = null,
     val timezone: Long? = null,
     val id: Int? = null,
-    val name: String? = null)
+    val name: String? = null,
+    val dt_txt: String? = null)
 
