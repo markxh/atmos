@@ -8,13 +8,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.*
 import kotlinx.android.synthetic.main.current_weather_fragment.*
 import za.co.dotmark.atmos.R
 import za.co.dotmark.atmos.databinding.CurrentWeatherFragmentBinding
@@ -22,10 +22,12 @@ import za.co.dotmark.atmos.viewmodel.WeatherViewModel
 
 class CurrentWeatherFragment : Fragment() {
 
-    private val LOCATION_REQUEST_CODE = 99
+    private val locationRequestCode = 99
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var forecastAdapter: ForecastAdapter
+
+    private lateinit var locationCallback: LocationCallback
 
     companion object {
         fun newInstance() = CurrentWeatherFragment()
@@ -38,7 +40,6 @@ class CurrentWeatherFragment : Fragment() {
                               savedInstanceState: Bundle?): View {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.current_weather_fragment, container, false)
-        binding.lifecycleOwner = this
 
         return binding.root
     }
@@ -46,20 +47,25 @@ class CurrentWeatherFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(WeatherViewModel::class.java)
+        binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        fusedLocationClient = context?.let { LocationServices.getFusedLocationProviderClient(it) }!!
-        addLocationListener()
+        try {
+            checkPermissions()
 
-        forecastAdapter = context?.let { ForecastAdapter(it) }!!
+            forecastAdapter = context?.let { ForecastAdapter(it) }!!
 
-        binding.forecastList.adapter = forecastAdapter
+            binding.forecastList.adapter = forecastAdapter
 
-        viewModel.forecastList.observe(this.viewLifecycleOwner, Observer { forecastAdapter.updateForecast(it) })
-        viewModel.weatherId.observe(this.viewLifecycleOwner, Observer { if(it != 0) updateBackground(it) })
-        viewModel.isLoading.observe(this.viewLifecycleOwner, Observer {
-            binding.progressView.visibility = if (it) View.VISIBLE else View.GONE
-        })
+            viewModel.forecastList.observe(this.viewLifecycleOwner, Observer { forecastAdapter.updateForecast(it) })
+            viewModel.weatherId.observe(this.viewLifecycleOwner, Observer { if(it != 0) updateBackground(it) })
+            viewModel.isLoading.observe(this.viewLifecycleOwner, Observer {
+                binding.progressView.visibility = if (it) View.VISIBLE else View.GONE
+            })
+
+        } catch (e: Exception) {
+            println("error: ${e.localizedMessage}")
+        }
     }
 
     private fun updateBackground(id: Int) {
@@ -107,34 +113,50 @@ class CurrentWeatherFragment : Fragment() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-        if(requestCode == LOCATION_REQUEST_CODE) {
-            if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                addLocationListener()
+        if(requestCode == locationRequestCode) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startLocationUpdates()
+            }
+            else {
+                //todo show error
             }
         }
     }
 
-    private fun addLocationListener() {
-        if (context?.let {
-                ActivityCompat.checkSelfPermission(
-                    it,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                )
-            } != PackageManager.PERMISSION_GRANTED && context?.let {
-                ActivityCompat.checkSelfPermission(
-                    it,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                )
-            } != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(context as Activity,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION),
-                LOCATION_REQUEST_CODE)
+    private fun checkPermissions() {
+        try {
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this.context!!)
 
-            return
+            locationCallback = object : LocationCallback() {
+                override fun onLocationResult(locationResult: LocationResult?) {
+                    super.onLocationResult(locationResult)
+
+                    if (locationResult != null && locationResult.lastLocation != null) {
+                        viewModel.refreshWeather(locationResult.lastLocation)
+                    }
+                }
+            }
+
+            startLocationUpdates()
+        } catch (e: Exception) {
+            println("error: ${e.localizedMessage}")
         }
+    }
 
-        fusedLocationClient.lastLocation.addOnSuccessListener(viewModel::refreshWeather)
+    private fun startLocationUpdates() {
+        if ((ContextCompat.checkSelfPermission(this.context!!, Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED)) {
+
+            ActivityCompat.requestPermissions(
+                this.context!! as Activity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                locationRequestCode)
+        }
+        else {
+            val locationRequest = LocationRequest()
+            locationRequest.interval = 2000
+            locationRequest.fastestInterval = 1000
+            locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
+        }
     }
 }
