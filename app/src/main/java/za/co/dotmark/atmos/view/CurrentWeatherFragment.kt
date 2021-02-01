@@ -58,6 +58,9 @@ class CurrentWeatherFragment : Fragment() {
 
         viewModel.forecastList.observe(this.viewLifecycleOwner, Observer { forecastAdapter.updateForecast(it) })
         viewModel.weatherId.observe(this.viewLifecycleOwner, Observer { if(it != 0) updateBackground(it) })
+        viewModel.isLoading.observe(this.viewLifecycleOwner, Observer {
+            binding.progressView.visibility = if (it) View.VISIBLE else View.GONE
+        })
     }
 
     private fun updateBackground(id: Int) {

@@ -6,6 +6,9 @@ import androidx.lifecycle.ViewModel
 import za.co.dotmark.atmos.model.CurrentWeather
 import za.co.dotmark.atmos.model.Forecast
 import za.co.dotmark.atmos.repository.WeatherRepository
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class WeatherViewModel : ViewModel() {
 
@@ -17,11 +20,15 @@ class WeatherViewModel : ViewModel() {
     var weatherId = MutableLiveData(0)
     var forecastList = MutableLiveData<List<CurrentWeather>>()
 
+    var isLoading = MutableLiveData(false)
+
     private val weatherRepository: WeatherRepository = WeatherRepository.getInstance()
 
     var units = "metric"
 
     fun refreshWeather(location: Location) {
+        isLoading.value = true
+
         getWeatherByLocation(location)
         getForecast(location)
     }
@@ -33,17 +40,21 @@ class WeatherViewModel : ViewModel() {
             } else {
                 //todo show error
             }
+
+            isLoading.value = false
         }
     }
 
     fun getForecast(location: Location) {
-        weatherRepository.getForecast(location.latitude, location.longitude, units, days = 5) {response, error ->
+        weatherRepository.getForecast(location.latitude, location.longitude, units) {response, error ->
             if(response != null) {
                 updateForecast(response)
             } else {
                 //todo show error
             }
         }
+
+        isLoading.value = false
     }
 
     private fun updateCurrentWeather(response: CurrentWeather) {
@@ -60,6 +71,24 @@ class WeatherViewModel : ViewModel() {
     }
 
     private fun updateForecast(response: Forecast) {
-        forecastList.value = response.list
+        val items = ArrayList<CurrentWeather>()
+
+        val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val dayFormatter = SimpleDateFormat("EEEE", Locale.getDefault())
+
+        var dayName = ""
+
+        response.list?.forEach {
+
+            val date = formatter.parse(it.dt_txt)
+            val day = dayFormatter.format(date)
+
+            if(dayName != day) {
+                dayName = day
+                items.add(it)
+            }
+        }
+
+        forecastList.value = items
     }
 }

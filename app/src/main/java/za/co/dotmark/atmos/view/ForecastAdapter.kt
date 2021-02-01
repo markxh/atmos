@@ -31,7 +31,7 @@ class ForecastAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView.
         try {
             val weatherItem = forecast[position]
 
-            (holder as ForecastItemViewHolder).day.text = weatherItem.dt?.let { getDay(it) }
+            (holder as ForecastItemViewHolder).day.text = weatherItem.dt_txt?.let { getDay(it) }
             holder.temp.text = context.getString(R.string.degrees, weatherItem.main?.temp?.toInt().toString())
 
             //todo add more icons for all weather conditions
@@ -50,9 +50,12 @@ class ForecastAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView.
         }
     }
 
-    private fun getDay(dt: Long) : String {
-        val formatter = SimpleDateFormat("EEEE", Locale.getDefault())
-        return formatter.format( Date(dt * 1000L))
+    private fun getDay(dateString: String) : String {
+        val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val date = formatter.parse(dateString)
+
+        val dayFormatter = SimpleDateFormat("EEEE", Locale.getDefault())
+        return dayFormatter.format(date)
     }
 
     private class ForecastItemViewHolder(inflater: LayoutInflater, parent: ViewGroup) :

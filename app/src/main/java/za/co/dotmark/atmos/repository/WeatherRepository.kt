@@ -56,8 +56,8 @@ class WeatherRepository {
             })
     }
 
-    fun getForecast(lat: Double, long: Double, units: String, days: Int, onResult: (response: Forecast?, error: ResponseBody?) -> Unit) {
-        apiService.get5DayForecast(lat, long, units, days, BuildConfig.API_KEY).enqueue(object: Callback<Forecast> {
+    fun getForecast(lat: Double, long: Double, units: String, onResult: (response: Forecast?, error: ResponseBody?) -> Unit) {
+        apiService.get5DayForecast(lat, long, units, BuildConfig.API_KEY).enqueue(object: Callback<Forecast> {
             override fun onResponse(call: Call<Forecast>, response: Response<Forecast>) {
                 if(response.isSuccessful) {
                     onResult(response.body(), response.errorBody())
